@@ -1,4 +1,4 @@
-﻿import sharp from 'sharp'; import fs from 'fs';
+import sharp from 'sharp'; import fs from 'fs';
 const map={
  'iphone-15-pro':'1695048133142-1a20484d2569','galaxy-s21-ultra':'1610945415295-d9bbf067e59c','iphone-13':'1678652197831-2d180705cd2c',
  'iphone-11':'1567581935884-3349723552ca','iphone-12-pro':'1592899677977-9c10ca588bbd','airpods-pro':'1572569511254-d8f925fe2cbb',

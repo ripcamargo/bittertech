@@ -1,4 +1,4 @@
-﻿import sharp from 'sharp'; import fs from 'fs';
+import sharp from 'sharp'; import fs from 'fs';
 const d='tools/cand/'; const fl=fs.readdirSync(d).filter(f=>f.endsWith('.jpg'));
 const W=300,H=300,C=6; const comps=[];
 for(let i=0;i<fl.length;i++){ try{ const b=await sharp(d+fl[i]).resize(W,H,{fit:'cover'}).toBuffer();

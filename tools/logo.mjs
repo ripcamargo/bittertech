@@ -1,4 +1,4 @@
-﻿import sharp from 'sharp';
+import sharp from 'sharp';
 const src='tools/logo-original.jpg';
 for (const [n,x,y] of [['tl',20,20],['c',60,380],['center',375,200],['br',700,730],['mid',100,600],['top',380,60]]) {
  const {data}=await sharp(src).extract({left:x,top:y,width:30,height:30}).raw().toBuffer({resolveWithObject:true});

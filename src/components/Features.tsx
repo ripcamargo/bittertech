@@ -1,4 +1,4 @@
-﻿import type { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { features, type FeatureIcon } from '../data/content'
 import { ChatIcon, CheckBadge, TagIcon, WhatsAppIcon } from './Icons'
 
