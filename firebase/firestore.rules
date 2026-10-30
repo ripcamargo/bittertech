@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// ATENÇÃO: o projeto "rifa-emoaranha" é compartilhado com outro app.
+// NÃO substitua as regras existentes: ADICIONE as funções e os blocos "bt_" abaixo
+// dentro do "match /databases/{database}/documents { ... }" que já existe.
+//
+// Troque SEU_EMAIL_ADMIN@exemplo.com pelo e-mail do usuário criado em
+// Firebase Console → Authentication → Users (é só 1 lugar: dentro de isAdmin()).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'ricardopcamargojr@gmail.com';
+    }
+
+    // ───────────────────────── PRODUTOS ─────────────────────────
+    // Vitrine pública (leitura livre); só o admin escreve.
+    match /bt_products/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /bt_meta/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ────────────────────────── RIFA ────────────────────────────
+    // Configuração e foto do prêmio: leitura pública, escrita só do admin.
+    match /bt_raffle/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Um documento por número (id = número). Público: só mostra se está reservado/pago,
+    // SEM dados pessoais. Qualquer visitante pode RESERVAR um número livre (ou cuja reserva
+    // venceu); só o admin marca como pago ou libera.
+    match /bt_raffle_tickets/{n} {
+      function cfg() {
+        return get(/databases/$(database)/documents/bt_raffle/config).data;
+      }
+      // Dados de uma nova reserva feita por visitante
+      function validReserve(c) {
+        let d = request.resource.data;
+        return c.active == true
+          && (!('endsAt' in c) || request.time < c.endsAt)
+          && n.matches('^[0-9]{1,4}$')
+          && int(n) >= 1 && int(n) <= c.total
+          && d.keys().hasOnly(['number', 'status', 'reservationId', 'createdAt'])
+          && d.number == int(n)
+          && d.status == 'reserved'
+          && d.createdAt == request.time
+          && d.reservationId is string
+          && d.reservationId.size() >= 4 && d.reservationId.size() <= 12;
+      }
+
+      allow read: if true;
+      allow create: if isAdmin() || validReserve(cfg());
+      // "Tomar" um número cuja reserva (não paga) já venceu
+      allow update: if isAdmin() || (
+        resource.data.status == 'reserved'
+        && request.time > resource.data.createdAt + duration.value(cfg().reserveHours, 'h')
+        && validReserve(cfg())
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Uma reserva por documento (id = código): nome e WhatsApp do comprador.
+    // Visitante só CRIA; apenas o admin lê ou altera.
+    match /bt_raffle_orders/{code} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() || (
+        request.resource.data.keys().hasOnly(['code', 'name', 'phone', 'numbers', 'total', 'status', 'createdAt'])
+        && request.resource.data.code == code
+        && request.resource.data.status == 'reserved'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.name is string && request.resource.data.name.size() <= 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() <= 15
+        && request.resource.data.numbers is list && request.resource.data.numbers.size() <= 20
+      );
+      allow update, delete: if isAdmin();
+    }
+  }
+}

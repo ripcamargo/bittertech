@@ -542,3 +542,12 @@
     padding: 18px 20px;
   }
 }
+
+/* ---------- Skeleton (catálogo carregando) ---------- */
+.card--skeleton { pointer-events: none; }
+.card--skeleton .card__media { aspect-ratio: 4 / 5; background: var(--line); animation: sk-pulse 1.3s ease-in-out infinite; }
+.card--skeleton .card__body { display: grid; gap: 10px; }
+.sk { display: block; height: 14px; border-radius: 8px; background: var(--line); animation: sk-pulse 1.3s ease-in-out infinite; }
+.sk--sm { width: 40%; }
+.sk--lg { height: 38px; }
+@keyframes sk-pulse { 50% { opacity: 0.55; } }

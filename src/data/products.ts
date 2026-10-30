@@ -7,6 +7,10 @@
  *  "price". Nenhum outro arquivo precisa ser tocado — o site monta o catálogo
  *  sozinho a partir desta lista.
  *
+ *  ℹ️  Com o painel /admin (Firestore) os produtos passam a ser gerenciados lá.
+ *      Esta lista vira apenas o catálogo inicial/reserva (usado enquanto o
+ *      Firestore estiver vazio e para importar os exemplos pelo painel).
+ *
  *  ⚠️  Os produtos abaixo são EXEMPLOS FICTÍCIOS (nomes, preços e fotos
  *      ilustrativas). Substitua pelos produtos reais da loja.
  *
@@ -62,10 +66,17 @@ export interface Product {
   video?: string
   longDescription?: string
   details?: Record<string, string>
+  /** Painel admin: true = não aparece no site. */
+  hidden?: boolean
+  /** Uso interno do painel (a listagem não carrega a galeria). */
+  hasGallery?: boolean
+  /** Painel admin: posição na lista (menor aparece primeiro). */
+  order?: number
 }
 
 /** Categorias exibidas nos filtros (a ordem aqui é a ordem dos botões). */
 export const categories: Category[] = ['Smartphones', 'Áudio', 'Acessórios', 'Outros eletrônicos']
+export const conditions: Condition[] = ['Novo', 'Seminovo', 'Recondicionado']
 
 export const products: Product[] = [
   // ───────────────────────────── SMARTPHONES ─────────────────────────────

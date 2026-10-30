@@ -1,6 +1,7 @@
 import { hero } from '../data/content'
 import { whatsappLink } from '../lib/whatsapp'
 import { ArrowRight, WhatsAppIcon } from './Icons'
+import { RaffleHeroPill } from './RaffleBanner'
 
 export default function Hero() {
   return (
@@ -14,6 +15,7 @@ export default function Hero() {
       </div>
 
       <div className="container hero__content">
+        <RaffleHeroPill />
         <p className="eyebrow hero__eyebrow">{hero.eyebrow}</p>
         <h1 className="hero__title">{hero.title}</h1>
         <p className="hero__subtitle">{hero.subtitle}</p>

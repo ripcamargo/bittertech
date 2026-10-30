@@ -1,10 +1,11 @@
-import { products } from '../data/products'
+import { useCatalog } from '../lib/catalog'
 import { Link } from '../lib/router'
-import ProductCard from './ProductCard'
+import ProductCard, { ProductSkeletons } from './ProductCard'
 import { ArrowRight } from './Icons'
 
 /** Vitrine da página inicial: produtos com featured: true (até 8). O catálogo completo fica em /produtos. */
 export default function Products() {
+  const { products, loading } = useCatalog()
   const featured = products.filter((p) => p.featured)
   const list = (featured.length ? featured : products).slice(0, 8)
 
@@ -19,11 +20,12 @@ export default function Products() {
             </h2>
           </div>
           <Link to="/produtos" className="btn btn--dark">
-            Ver todos os produtos ({products.length}) <ArrowRight width={18} height={18} />
+            Ver todos os produtos{products.length ? ` (${products.length})` : ''} <ArrowRight width={18} height={18} />
           </Link>
         </header>
 
         <div className="grid">
+          {loading && !products.length && <ProductSkeletons count={4} />}
           {list.map((p, i) => (
             <ProductCard key={p.id} product={p} index={i} />
           ))}

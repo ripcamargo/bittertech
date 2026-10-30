@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { products, type Product } from '../data/products'
+import type { Product } from '../data/products'
+import { fetchFullProduct, useCatalog } from '../lib/catalog'
 import { parseVideo, type VideoSource } from '../lib/media'
 import { closeProduct, useSelectedProductId } from '../lib/router'
 import { formatPrice, productLink } from '../lib/whatsapp'
@@ -9,9 +10,21 @@ type Slide = { type: 'image'; src: string } | { type: 'video'; video: VideoSourc
 
 export default function ProductModal() {
   const id = useSelectedProductId()
+  const { products } = useCatalog()
   const product = id ? products.find((p) => p.id === id) : undefined
+  const [fullProduct, setFullProduct] = useState<Product | null>(null)
+  useEffect(() => {
+    setFullProduct(null)
+    if (!id) return
+    let alive = true
+    void fetchFullProduct(id).then((p) => alive && setFullProduct(p))
+    return () => {
+      alive = false
+    }
+  }, [id])
   if (!product) return null
-  return <ModalBody key={product.id} product={product} />
+  // Mescla a versão completa (galeria etc.) assim que chega; produtos de exemplo não têm documento remoto.
+  return <ModalBody key={product.id} product={fullProduct ? { ...product, ...fullProduct } : product} />
 }
 
 function ModalBody({ product }: { product: Product }) {

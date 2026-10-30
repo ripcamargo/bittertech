@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import Contact from '../components/Contact'
 import { SearchIcon, WhatsAppIcon } from '../components/Icons'
-import ProductCard from '../components/ProductCard'
-import { categories, products, type Category, type Condition } from '../data/products'
+import ProductCard, { ProductSkeletons } from '../components/ProductCard'
+import { categories, conditions, type Category, type Condition } from '../data/products'
+import { useCatalog } from '../lib/catalog'
 import { Link } from '../lib/router'
 import { useReveal } from '../lib/useReveal'
 import { whatsappLink } from '../lib/whatsapp'
@@ -10,9 +11,9 @@ import { whatsappLink } from '../lib/whatsapp'
 type Sort = 'default' | 'price-asc' | 'price-desc' | 'name'
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-const conditions: Condition[] = ['Novo', 'Seminovo', 'Recondicionado']
 
 export default function ProductsPage() {
+  const { products, loading } = useCatalog()
   const [category, setCategory] = useState<Category | 'Todos'>('Todos')
   const [condition, setCondition] = useState<Condition | 'Todas'>('Todas')
   const [sort, setSort] = useState<Sort>('default')
@@ -37,9 +38,9 @@ export default function ProductsPage() {
           ? (asc(a) === asc(b) ? 0 : asc(a) < asc(b) ? -1 : 1)
           : (desc(a) === desc(b) ? 0 : desc(a) > desc(b) ? -1 : 1),
     )
-  }, [category, condition, sort, query])
+  }, [products, category, condition, sort, query])
 
-  useReveal([category, condition, sort, query])
+  useReveal([products, category, condition, sort, query])
 
   const countIn = (c: Category | 'Todos') => (c === 'Todos' ? products.length : products.filter((p) => p.category === c).length)
   const filtered = category !== 'Todos' || condition !== 'Todas' || query !== ''
@@ -121,7 +122,11 @@ export default function ProductsPage() {
             )}
           </p>
 
-          {visible.length > 0 ? (
+          {loading && !products.length ? (
+            <div className="grid">
+              <ProductSkeletons count={8} />
+            </div>
+          ) : visible.length > 0 ? (
             <div className="grid">
               {visible.map((p, i) => (
                 <ProductCard key={p.id} product={p} index={i} />

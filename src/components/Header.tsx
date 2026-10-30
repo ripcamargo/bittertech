@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useRaffleConfig } from '../lib/raffle'
 import { Link, useLocation } from '../lib/router'
 import { whatsappLink } from '../lib/whatsapp'
 import { CloseIcon, MenuIcon } from './Icons'
@@ -11,12 +12,15 @@ const links = [
 ]
 
 export default function Header() {
+  const { config: raffle } = useRaffleConfig()
+  const raffleOn = !!raffle && (raffle.active || !!raffle.winner)
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [spy, setSpy] = useState('inicio')
   const { pathname } = useLocation()
   const onCatalog = pathname.replace(/\/$/, '') === '/produtos'
-  const active = onCatalog ? (spy === 'contato' ? 'contato' : 'produtos') : spy
+  const onRaffle = pathname.replace(/\/$/, '') === '/rifa'
+  const active = onRaffle ? 'rifa' : onCatalog ? (spy === 'contato' ? 'contato' : 'produtos') : spy
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -63,7 +67,7 @@ export default function Header() {
         </Link>
 
         <nav className="header__nav" aria-label="Principal">
-          {links.map((l) => (
+          {(raffleOn ? [...links.slice(0, 2), { id: 'rifa', label: '🎟️ Rifa', to: '/rifa' }, ...links.slice(2)] : links).map((l) => (
             <Link key={l.id} to={l.to} className={active === l.id ? 'is-active' : ''} onClick={() => setOpen(false)}>
               {l.label}
             </Link>

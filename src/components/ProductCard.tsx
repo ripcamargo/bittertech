@@ -3,6 +3,24 @@ import { openProduct } from '../lib/router'
 import { formatPrice, productLink } from '../lib/whatsapp'
 import { WhatsAppIcon } from './Icons'
 
+/** Placeholders exibidos enquanto o catálogo carrega. */
+export function ProductSkeletons({ count = 4 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        <div key={i} className="card card--skeleton is-visible" aria-hidden="true">
+          <div className="card__media" />
+          <div className="card__body">
+            <span className="sk sk--sm" />
+            <span className="sk" />
+            <span className="sk sk--lg" />
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
 export default function ProductCard({ product, index }: { product: Product; index: number }) {
   const { id, name, description, price, oldPrice, image, condition, specs, badge, soldOut, category } = product
 
