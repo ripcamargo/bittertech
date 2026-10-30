@@ -13,7 +13,7 @@ npm run preview   # testa o build
 ## O que editar
 | O quê | Onde |
 |---|---|
-| **Produtos, preços, fotos** | `src/data/products.ts` (instruções no topo do arquivo) |
+| **Produtos, preços, fotos, vídeo, ficha técnica** | `src/data/products.ts` (instruções no topo do arquivo) |
 | Fotos dos produtos | coloque em `public/images/products/` e referencie como `/images/products/arquivo.webp` |
 | Textos (hero, sobre, diferenciais, FAQ, contato) e número do WhatsApp | `src/data/content.ts` |
 | Cores | variáveis `:root` em `src/styles/global.css` |
@@ -21,3 +21,9 @@ npm run preview   # testa o build
 
 Os produtos atuais são **exemplos fictícios**. As fotos vêm do Unsplash (licença gratuita) e ficam salvas localmente.
 Para publicar: envie a pasta `dist/` para Netlify, Vercel, Cloudflare Pages etc.
+
+## Páginas
+- `/` — landing page (a vitrine mostra os produtos com `featured: true`).
+- `/produtos` — catálogo completo com busca, categorias, condição e ordenação.
+- Clique em um produto para abrir o modal (galeria, vídeo, descrição, ficha técnica). Cada produto tem link próprio: `/produtos?p=ID-DO-PRODUTO`.
+- Ao publicar, o servidor precisa devolver `index.html` para qualquer rota (já configurado em `vercel.json` e `public/_redirects`).

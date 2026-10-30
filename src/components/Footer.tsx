@@ -8,7 +8,15 @@ export default function Footer() {
         <p>
           © {new Date().getFullYear()} {store.name} · {store.city}. Preços e disponibilidade sujeitos a alteração — confirme pelo WhatsApp.
         </p>
-        <a href="#inicio">Voltar ao topo ↑</a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+        >
+          Voltar ao topo ↑
+        </a>
       </div>
     </footer>
   )

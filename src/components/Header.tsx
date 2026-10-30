@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react'
+import { Link, useLocation } from '../lib/router'
 import { whatsappLink } from '../lib/whatsapp'
 import { CloseIcon, MenuIcon } from './Icons'
 
 const links = [
-  { id: 'inicio', label: 'Início' },
-  { id: 'produtos', label: 'Produtos' },
-  { id: 'sobre', label: 'Sobre nós' },
-  { id: 'contato', label: 'Contato' },
+  { id: 'inicio', label: 'Início', to: '/' },
+  { id: 'produtos', label: 'Produtos', to: '/produtos' },
+  { id: 'sobre', label: 'Sobre nós', to: '/#sobre' },
+  { id: 'contato', label: 'Contato', to: '/#contato' },
 ]
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
-  const [active, setActive] = useState('inicio')
+  const [spy, setSpy] = useState('inicio')
+  const { pathname } = useLocation()
+  const onCatalog = pathname.replace(/\/$/, '') === '/produtos'
+  const active = onCatalog ? (spy === 'contato' ? 'contato' : 'produtos') : spy
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -21,18 +25,25 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Destaca no menu a seção visível
+  // Destaca no menu a seção visível (na página de produtos, só “Contato” é uma seção)
   useEffect(() => {
+    setSpy(onCatalog ? 'produtos' : 'inicio')
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      (entries) => entries.forEach((e) => e.isIntersecting && setSpy(e.target.id)),
       { rootMargin: '-45% 0px -50% 0px' },
     )
-    links.forEach((l) => {
-      const el = document.getElementById(l.id)
-      if (el) io.observe(el)
-    })
-    return () => io.disconnect()
-  }, [])
+    // aguarda a página montar antes de observar
+    const t = setTimeout(() => {
+      links.forEach((l) => {
+        const el = document.getElementById(l.id)
+        if (el) io.observe(el)
+      })
+    }, 50)
+    return () => {
+      clearTimeout(t)
+      io.disconnect()
+    }
+  }, [onCatalog])
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -47,15 +58,15 @@ export default function Header() {
   return (
     <header className={`header${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
       <div className="container header__inner">
-        <a href="#inicio" className="header__logo" aria-label="Bitter Tech Store — início" onClick={() => setOpen(false)}>
+        <Link to="/" className="header__logo" aria-label="Bitter Tech Store — início" onClick={() => setOpen(false)}>
           <img src="/images/logo-white.png" alt="Bitter Tech Store" width="469" height="162" />
-        </a>
+        </Link>
 
         <nav className="header__nav" aria-label="Principal">
           {links.map((l) => (
-            <a key={l.id} href={`#${l.id}`} className={active === l.id ? 'is-active' : ''} onClick={() => setOpen(false)}>
+            <Link key={l.id} to={l.to} className={active === l.id ? 'is-active' : ''} onClick={() => setOpen(false)}>
               {l.label}
-            </a>
+            </Link>
           ))}
           <a
             className="btn btn--light btn--sm header__cta"

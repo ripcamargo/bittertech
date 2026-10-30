@@ -1,9 +1,10 @@
 import type { Product } from '../data/products'
+import { openProduct } from '../lib/router'
 import { formatPrice, productLink } from '../lib/whatsapp'
 import { WhatsAppIcon } from './Icons'
 
 export default function ProductCard({ product, index }: { product: Product; index: number }) {
-  const { name, description, price, oldPrice, image, condition, specs, badge, soldOut, category } = product
+  const { id, name, description, price, oldPrice, image, condition, specs, badge, soldOut, category } = product
 
   return (
     <article className={`card reveal${soldOut ? ' is-soldout' : ''}`} style={{ transitionDelay: `${(index % 4) * 60}ms` }}>
@@ -11,11 +12,16 @@ export default function ProductCard({ product, index }: { product: Product; inde
         <img src={image} alt={`${name} — ${category}`} loading="lazy" decoding="async" width="900" height="1100" />
         {(badge || soldOut) && <span className="card__badge">{soldOut ? 'Vendido' : badge}</span>}
         {condition && <span className={`card__condition card__condition--${condition.toLowerCase()}`}>{condition}</span>}
+        <span className="card__peek">Ver detalhes</span>
       </div>
 
       <div className="card__body">
         <p className="card__category">{category}</p>
-        <h3 className="card__name">{name}</h3>
+        <h3 className="card__name">
+          <button type="button" className="card__open" onClick={() => openProduct(id)}>
+            {name}
+          </button>
+        </h3>
         <p className="card__desc">{description}</p>
 
         {specs && specs.length > 0 && (
