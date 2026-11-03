@@ -216,4 +216,10 @@
   .cd div, .rbanner .cd div { min-width: 0; flex: 1; }
   .rbanner .cd, .rmodal__timer .cd { display: grid; grid-template-columns: repeat(4, 1fr); }
 }
+/* mobile: chip alinhado (centro) ao botão do WhatsApp (56px, bottom 14px); pílula menos arredondada */
+@media (max-width: 760px) {
+  .raffle-chip { left: 14px; bottom: 22px; height: 40px; padding: 0 14px; }
+  .hero-pill { border-radius: 10px; }
+  .hero-pill em { border-radius: 6px; }
+}
 @media (prefers-reduced-motion: reduce) { .cd.is-urgent div, .rbanner__hot, .hero-pill__dot, .rbanner__live i { animation: none; } }

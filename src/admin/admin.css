@@ -23,7 +23,7 @@
 .admin textarea { resize: vertical; }
 .admin input:focus, .admin select:focus, .admin textarea:focus { outline: 2px solid var(--teal-300); outline-offset: 0; border-color: var(--teal-600); }
 .admin input:disabled { background: var(--paper); color: var(--ink-soft); }
-.f { display: grid; gap: 6px; margin-bottom: 14px; }
+.f { display: grid; gap: 6px; margin-bottom: 14px; align-content: start; }
 .f > span { font-weight: 600; font-size: 13px; }
 .f > span em, .hint { font-style: normal; font-weight: 400; color: var(--ink-soft); font-size: 12.5px; }
 .f small { color: var(--ink-soft); font-size: 12px; justify-self: end; }
