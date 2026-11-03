@@ -1,5 +1,6 @@
 import QRCode from 'qrcode'
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { RichText } from '../lib/richText'
 import { WhatsAppIcon } from '../components/Icons'
 import { Countdown } from '../components/RaffleBanner'
 import { pixPayload, normalizePixKey } from '../lib/pix'
@@ -125,15 +126,11 @@ export default function RafflePage() {
 
   const numbers = Array.from({ length: cfg.total }, (_, i) => i + 1)
   const total = money(selected.length * cfg.price)
-  const rules = [
-    'Escolha seus números e faça a reserva informando seu nome e WhatsApp.',
-    'Pague o valor total da reserva por PIX (QR Code ou copia e cola).',
-    `A reserva fica garantida por ${cfg.reserveHours} ${cfg.reserveHours === 1 ? 'hora' : 'horas'}. Sem pagamento nesse prazo, os números voltam a ficar livres para outras pessoas.`,
-    'Depois de pagar, envie o comprovante pelo WhatsApp. A confirmação do pagamento é feita manualmente pela loja.',
-    ...(cfg.rules ?? '')
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean),
+  const steps: ReactNode[] = [
+    <><b>Escolha</b> seus números e faça a reserva informando seu <b>nome</b> e <b>WhatsApp</b>.</>,
+    <><b>Pague</b> o valor total da reserva por <b>PIX</b> (QR Code ou copia e cola).</>,
+    <>A reserva fica garantida por <b>{cfg.reserveHours} {cfg.reserveHours === 1 ? 'hora' : 'horas'}</b>. Sem pagamento nesse prazo, os números <u>voltam a ficar livres</u> para outras pessoas.</>,
+    <>Depois de pagar, <b>envie o comprovante pelo WhatsApp</b>. A confirmação do pagamento é feita <em>manualmente</em> pela loja.</>,
   ]
 
   return (
@@ -246,11 +243,17 @@ export default function RafflePage() {
       <section className="rf-wrap rf-rules">
         <div className="container">
           <h2>Como funciona e regras</h2>
-          <ol>
-            {rules.map((r, i) => (
-              <li key={i}>{r}</li>
+          <h3>Passo a passo</h3>
+          <ol className="rf-steps">
+            {steps.map((s, i) => (
+              <li key={i}>{s}</li>
             ))}
           </ol>
+          {cfg.rules?.trim() && (
+            <div className="rf-rules__extra">
+              <RichText text={cfg.rules} />
+            </div>
+          )}
         </div>
       </section>
 

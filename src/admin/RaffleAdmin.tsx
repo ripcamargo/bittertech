@@ -161,6 +161,30 @@ function ConfigForm({ config, tickets, say }: { config: RaffleConfig | null; tic
   const [drawDate, setDrawDate] = useState(init.drawDate ?? '')
   const [endsAt, setEndsAt] = useState(init.endsAt ? toLocalInput(init.endsAt) : '')
   const [rules, setRules] = useState(init.rules ?? '')
+  const rulesRef = useRef<HTMLTextAreaElement>(null)
+  const edit = (next: string, from: number, to: number) => {
+    setRules(next)
+    requestAnimationFrame(() => {
+      rulesRef.current?.focus()
+      rulesRef.current?.setSelectionRange(from, to)
+    })
+  }
+  /** Envolve a seleção (ex.: **negrito**). */
+  const fmt = (open: string, close: string) => {
+    const el = rulesRef.current
+    if (!el) return
+    const { selectionStart: a, selectionEnd: b } = el
+    const sel = rules.slice(a, b) || 'texto'
+    edit(rules.slice(0, a) + open + sel + close + rules.slice(b), a + open.length, a + open.length + sel.length)
+  }
+  /** Coloca um prefixo (título, tópico…) no início da linha atual. */
+  const fmtLine = (prefix: string) => {
+    const el = rulesRef.current
+    if (!el) return
+    const a = el.selectionStart
+    const start = rules.lastIndexOf('\n', a - 1) + 1
+    edit(rules.slice(0, start) + prefix + rules.slice(start), a + prefix.length, a + prefix.length)
+  }
   const [pixType, setPixType] = useState<PixKeyType>(init.pixType)
   const [pixKey, setPixKey] = useState(init.pixKey)
   const [pixName, setPixName] = useState(init.pixName)
@@ -334,7 +358,19 @@ function ConfigForm({ config, tickets, say }: { config: RaffleConfig | null; tic
       <fieldset>
         <legend>Regras</legend>
         <p className="hint">O site já mostra automaticamente as regras de reserva (prazo de {hours || 24} h, pagamento por PIX e confirmação manual). Escreva abaixo regras extras, uma por linha.</p>
-        <label className="f"><span>Regras adicionais <em>opcional</em></span><textarea value={rules} onChange={(e) => setRules(e.target.value)} rows={4} placeholder={'Ex.:\nO ganhador será avisado pelo WhatsApp.\nPrêmio retirado na loja, em Sorocaba.'} /></label>
+        <div className="f">
+          <span>Regras adicionais <em>opcional — aparece em “Como funciona e regras”</em></span>
+          <div className="fmt-bar" role="toolbar" aria-label="Formatação">
+            <button type="button" title="Negrito" onClick={() => fmt('**', '**')}><b>N</b></button>
+            <button type="button" title="Itálico" onClick={() => fmt('*', '*')}><i>I</i></button>
+            <button type="button" title="Sublinhado" onClick={() => fmt('__', '__')}><u>S</u></button>
+            <button type="button" title="Título" onClick={() => fmtLine('## ')}>Título</button>
+            <button type="button" title="Tópicos" onClick={() => fmtLine('- ')}>• Tópico</button>
+            <button type="button" title="Lista numerada" onClick={() => fmtLine('1. ')}>1. Lista</button>
+          </div>
+          <textarea ref={rulesRef} value={rules} onChange={(e) => setRules(e.target.value)} rows={9} placeholder={'## Prêmio\n- O ganhador será avisado pelo **WhatsApp**.\n- Prêmio retirado na loja, em *Sorocaba*.\n\n## Sorteio\nO sorteio será pela __Loteria Federal__.'} />
+          <small className="fmt-help">Use **negrito**, *itálico*, __sublinhado__, “## Título” e “- tópico”. O texto fica justificado no site.</small>
+        </div>
       </fieldset>
 
       {error && <p className="f-error" role="alert">{error}</p>}

@@ -24,6 +24,10 @@
 .panel legend { font-family: 'Sora Variable', sans-serif; font-weight: 700; font-size: 15px; color: var(--teal-800); padding: 0; margin-bottom: 10px; }
 .panel__foot { display: flex; justify-content: flex-end; padding-top: 8px; position: sticky; bottom: 0; background: linear-gradient(transparent, #fff 30%); }
 .f-row.f-row--4 { grid-template-columns: repeat(4, 1fr); }
+.fmt-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+.fmt-bar button { font: inherit; font-size: 13px; min-width: 34px; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; color: var(--ink); }
+.fmt-bar button:hover { background: var(--teal-100); }
+.f > small.fmt-help { justify-self: start; }
 .f small.ok { color: #1b7a43; justify-self: start; }
 .f small.bad { color: #a12b2b; justify-self: start; }
 
